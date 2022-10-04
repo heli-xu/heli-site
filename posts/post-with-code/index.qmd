@@ -1,13 +1,45 @@
 ---
-title: "Post With Code"
-author: "Harlow Malloc"
+title: "Philly Center City Distric Restaurant Week 2022"
+author: "Heli Xu"
 date: "2022-10-04"
 categories: [news, code, analysis]
 image: "image.jpg"
+format:
+  html:
+    toc: true
+    toc-location: left
 ---
 
-This is a post with executable code.
+# Introduction
+
+This is based on an R-ladies Philly (link) workshop on webscraping, geocoding, and interactive map-making, presented by Silvia Canelón. I found it really interesting and helpful, and Silvia made it easy to follow, even though I had zero experience making maps prior to that. I'm replicating steps from Silvia's tutorial using another set of data from Center City District. The goal is to visualize all the restaurants participating in the 2022 CCD Restaurant Week in an interactive map.
 
 ```{r}
-1 + 1
+#| warning: false
+library(tidyverse)
+library(here)
+library(knitr)
+library(robotstxt)
+library(rvest)
+library(tidygeocoder)
+library(leaflet)
+library(leaflet.extras)
 ```
+
+# Scraping the data
+
+We will scrape the data from the list view: https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view
+
+## checking site permissions
+
+To check if an pages are not allowed to be scraped, we are using robotstxt package.
+
+```{r}
+get_robotstxt("https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view")
+```
+
+(sometimes it says something about not resolving host-the website-but it goes away but itself after a few tries.)
+
+## Harvesting data from the first page
+
+We are using In the list view from the website, all restaurants are split into four pages, so we'd need a function to scrape each page. Before that, we
