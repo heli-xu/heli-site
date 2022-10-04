@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "new_beginning"
+  title: "Welcome"
   navbar:
     right:
       - about.qmd
@@ -12,8 +12,9 @@ website:
         href: https://twitter.com
 format:
   html:
-    theme: cosmo
+    theme: sketchy
     css: styles.css
+    highlight-style: eiffel
 
 editor: visual
 
