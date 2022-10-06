@@ -6,16 +6,14 @@ categories: [news, code, analysis]
 image: "image.jpg"
 format:
   html:
-    code-link: true
     toc: true
     toc-location: left
-execute: 
-  cache: true
+    code-link: true
 ---
 
 # Introduction
 
-This is based on an R-ladies Philly (link) workshop on webscraping, geocoding, and interactive map-making, presented by Silvia Canelón. I found it really interesting and helpful, and Silvia made it easy to follow, even though I had zero experience making maps prior to that. I'm replicating steps from Silvia's tutorial using another set of data from Center City District. The goal is to visualize all the restaurants participating in the 2022 CCD Restaurant Week in an interactive map.
+This is based on an [R-ladies Philly](https://www.rladiesphilly.org/) workshop on [webscraping, geocoding, and interactive map-making](https://spcanelon.github.io/2022-ccd-sips/#customizing-map-markers) presented by Silvia Canelón. I found it really interesting and helpful, and Silvia made it easy to follow, even though I had zero experience making maps prior to that. I'm replicating steps from Silvia's tutorial using another set of data from Center City District. The goal is to visualize all the restaurants participating in the 2022 CCD Restaurant Week in an interactive map.
 
 ```{r}
 #| warning: false
@@ -106,7 +104,7 @@ getTables <- function(pageNumber) {
 }
 ```
 
-After creating the function, we can use purrr::map_df() to repeat the data harvesting for the rest of pages (2-4). Then we can combine all the data frames together and save the final data frame as and .rds. object, so that we don't have to keep scraping every time.
+After creating the function, we can use `purrr::map_df()` to repeat the data harvesting for the rest of pages (2-4). Then we can combine all the data frames together and save the final data frame as and .rds. object, so that we don't have to keep scraping every time.
 
 ```{r}
 #| eval: false
@@ -125,7 +123,7 @@ table_all %>% head()
 write_rds(table_all, file = here("data", "restaurant_list_links.rds"))
 ```
 
-Side note: saveRDS vs write_rds: the only major difference between the two is that `write_rds()` does not compress the file by default.
+Side note: `saveRDS()` vs `write_rds()`: the only major difference between the two is that `write_rds()` does not compress the file by default.
 
 (I only added cache: true at his point, to avoid repeated scraping, I'll load the . rds file here for downstream visualization.)
 
@@ -141,6 +139,7 @@ table_all %>% head() %>% kable()
 This step is to convert restaurant addresses to geographical coordinates (longitude and latitude) for mapping. Now we're using tidygeocoder package, with ArcGIS geocoding service.
 
 ```{r}
+#| eval: false
 # geocode adresses-adding log/latt to the table
 table_geo <- table_all %>% 
   geocode(address = Address,
@@ -153,6 +152,7 @@ table_geo %>% head() %>% kable()
 It's time to save this new dataframe as another .rds object so we don't have to spend that 39.5s to geocode the same data again next time we need to map the data.
 
 ```{r}
+#| eval: false
 write_rds(table_geo, "data/restaurant_list_geocoded.rds")
 
 ```
@@ -163,11 +163,16 @@ Here comes leaflet!!
 
 ## Plotting the restaurants
 
-To customize labels, we could add a \[Google Font\]\[https://fonts.google.com/\] with a css chunk to import the font faces/weights.
+To customize labels, we could add a [Google Font](https://fonts.google.com/) with a css chunk to import the font faces/weights.
 
 ```{css}
 @import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@500&display=swap');
 
+```
+
+```{r}
+#| echo: false
+table_geo <- readRDS("data/restaurant_list_geocoded.rds")
 ```
 
 ```{r}
@@ -215,5 +220,48 @@ circles_map_view
 
 ```{r}
 circles_map_view %>% 
+  addFullscreenControl()
+```
+
+## Customizing map markers
+
+```{r}
+# style pop-ups for the map with inline css styling
+
+# marker for the restaurants (circles)
+popInfoCircles <- paste(
+  "<h2 style='font-family: Fira Sans, sans-serif; font-size: 1.6em; color:#43464C;'>", 
+  "<a style='color: #00857A;' href=", table_geo$Menu, ">", table_geo$Name, "</a></h2>",
+  "<p style='font-family: Fira Sans, sans-serif; font-weight: normal; font-size: 1.5em; color:#9197A6;'>", table_geo$Address, "</p>"
+  )
+```
+
+Now we are incorporating this styling into the previous map:
+
+```{r}
+leaflet(data = table_geo,
+        options = tileOptions(minZoom = 15,
+                              maxZoom = 19)) %>% 
+  #add map markers
+  addCircles(lat = ~Latitude,
+             lng = ~Longtitude,
+             fillColor = "#eb6857",
+             fillOpacity = 0.7,
+             stroke = F,
+             radius = 13,
+             #customize popups (more info plus style)
+             popup = popInfoCircles,
+             label = ~Name,
+             #customize labels
+             labelOptions = labelOptions(
+               style = list(
+                 "font-family" = "Fira Sans, sans-serif",
+                 "font-size" = "1.2em"
+               )
+             )) %>% 
+  addProviderTiles(providers$CartoDB.Voyager) %>% 
+  setView(mean(table_geo$Longtitude),
+          mean(table_geo$Latitude),
+          zoom = 16) %>% 
   addFullscreenControl()
 ```
