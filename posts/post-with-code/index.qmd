@@ -28,7 +28,7 @@ library(leaflet.extras)
 
 # Scraping the data
 
-We will scrape the data from the list view: https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view
+We will scrape the data from the list view: <https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view>
 
 ## checking site permissions
 
@@ -42,4 +42,83 @@ get_robotstxt("https://centercityphila.org/explore-center-city/ccd-restaurant-we
 
 ## Harvesting data from the first page
 
-We are using In the list view from the website, all restaurants are split into four pages, so we'd need a function to scrape each page. Before that, we
+We are using In the list view from the website, all restaurants are split into four pages, so we'd need a function to scrape each page. Before that, we'll check the function with the first page.
+
+```{r}
+#| eval: false
+
+# define the page (click on page 1 at the bottom)
+url1 <- "https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view?page=1"
+
+# read the page html
+html1 <- read_html(url1)
+
+# extract table info (inspect elements)
+table1 <- html1 %>% 
+  html_node("table") %>% 
+  html_table()
+table1 %>% head() %>% kable()  # if piped all the way down it doesn't print
+
+# extract hyperlinks to specific restaurant menus (popup window)
+# can right click-copy link address to see what it's supposed to look at 
+links <- html1 %>% 
+  html_elements(".o-table__tag.ccd-text-link") %>% 
+  html_attr("href") %>% # a vector 
+  as_tibble() 
+links %>% head() %>% kable()
+
+# add links to the table 
+table1_link <- bind_cols(table1, links) %>% 
+  mutate(Menu = paste0(url1, value)) %>% 
+  select(-c('Menu & Reservations', value)) 
+table1_link %>% head() %>% kable()
+```
+
+## Create a function to harvest data from remaining pages
+
+```{r}
+getTables <- function(pageNumber) {
+  # wait 2 seconds between each page 
+  Sys.sleep(2)
+  
+  url <- paste0("https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view?page=", pageNumber)
+  
+  # read the page html
+  html <- read_html(url)
+  
+  # extract table info
+  table <- html %>% 
+    html_node("table") %>% 
+    html_table()
+  
+  # extract hyperlinks to specific restaurant menus (popup window)
+  links <- html %>%
+    html_elements(".o-table__tag.ccd-text-link") %>%
+    html_attr("href") %>% # a vector
+    as_tibble() 
+  
+  # add links to the table
+  table_link <- bind_cols(table, links) %>%
+    mutate(Menu = paste0(url, value)) %>%
+    select(-c('Menu & Reservations', value))
+}
+```
+
+After creating the function, we can use purrr::map_df() to repeat the data harvesting for the rest of pages (2-4). Then we can combine all the data frames together and save the final data frame as and .rds. object, so that we don't have to keep scraping every time.
+
+```{r}
+#| eval: false
+
+# get remaining table
+table2_4 <- map_df(2:4, getTables)
+
+# combine all tables
+table_all <- bind_rows(table1_link, table2_4)
+table_all %>% head() %>% kable()
+
+#tryout with or without kable()
+table_all %>% head()
+
+# save full table to file
+write_rds(table_all, file = here("data", "restaurant_list_links.rds"))
+```
