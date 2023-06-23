@@ -232,7 +232,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="checking-site-permissions" class="level2"><h2 class="anchored" data-anchor-id="checking-site-permissions">checking site permissions</h2>
 <p>To check if an pages are not allowed to be scraped, we are using robotstxt package.</p>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/robotstxt/reference/get_robotstxt.html">get_robotstxt</a></span><span class="op">(</span><span class="st">"https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/robotstxt/man/get_robotstxt.html">get_robotstxt</a></span><span class="op">(</span><span class="st">"https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in request_handler_handler(request = request, handler = on_not_found, :
 Event: on_not_found</code></pre>
@@ -294,12 +294,12 @@ problems, cached, request, class</code></pre>
 <span><span class="va">url1</span> <span class="op">&lt;-</span> <span class="st">"https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view?page=1"</span></span>
 <span></span>
 <span><span class="co"># read the page html</span></span>
-<span><span class="va">html1</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://xml2.r-lib.org/reference/read_xml.html">read_html</a></span><span class="op">(</span><span class="va">url1</span><span class="op">)</span></span>
+<span><span class="va">html1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xml2/man/read_xml.html">read_html</a></span><span class="op">(</span><span class="va">url1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># extract table info (inspect elements)</span></span>
 <span><span class="va">table1</span> <span class="op">&lt;-</span> <span class="va">html1</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/rvest/man/rename.html">html_node</a></span><span class="op">(</span><span class="st">"table"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/rvest/man/html_table.html">html_table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rvest.tidyverse.org/reference/rename.html">html_node</a></span><span class="op">(</span><span class="st">"table"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_table.html">html_table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">table1</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># if piped all the way down it doesn't print</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
@@ -358,9 +358,9 @@ problems, cached, request, class</code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># extract hyperlinks to specific restaurant menus (popup window)</span></span>
 <span><span class="co"># can right click-copy link address to see what it's supposed to look at </span></span>
 <span><span class="va">links</span> <span class="op">&lt;-</span> <span class="va">html1</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/rvest/man/html_element.html">html_elements</a></span><span class="op">(</span><span class="st">".o-table__tag.ccd-text-link"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/rvest/man/html_attr.html">html_attr</a></span><span class="op">(</span><span class="st">"href"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="co"># a vector </span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span>  <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_element.html">html_elements</a></span><span class="op">(</span><span class="st">".o-table__tag.ccd-text-link"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_attr.html">html_attr</a></span><span class="op">(</span><span class="st">"href"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="co"># a vector </span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> </span>
 <span><span class="va">links</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
@@ -458,18 +458,18 @@ problems, cached, request, class</code></pre>
 <span>  <span class="va">url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"https://centercityphila.org/explore-center-city/ccd-restaurant-week/list-view?page="</span>, <span class="va">pageNumber</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co"># read the page html</span></span>
-<span>  <span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://xml2.r-lib.org/reference/read_xml.html">read_html</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span></span>
+<span>  <span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/xml2/man/read_xml.html">read_html</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co"># extract table info</span></span>
 <span>  <span class="va">table</span> <span class="op">&lt;-</span> <span class="va">html</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/rvest/man/rename.html">html_node</a></span><span class="op">(</span><span class="st">"table"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/rvest/man/html_table.html">html_table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rvest.tidyverse.org/reference/rename.html">html_node</a></span><span class="op">(</span><span class="st">"table"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>    <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_table.html">html_table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co"># extract hyperlinks to specific restaurant menus (popup window)</span></span>
 <span>  <span class="va">links</span> <span class="op">&lt;-</span> <span class="va">html</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/rvest/man/html_element.html">html_elements</a></span><span class="op">(</span><span class="st">".o-table__tag.ccd-text-link"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/rvest/man/html_attr.html">html_attr</a></span><span class="op">(</span><span class="st">"href"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="co"># a vector</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span>    <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_element.html">html_elements</a></span><span class="op">(</span><span class="st">".o-table__tag.ccd-text-link"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_attr.html">html_attr</a></span><span class="op">(</span><span class="st">"href"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="co"># a vector</span></span>
+<span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> </span>
 <span>  </span>
 <span>  <span class="co"># add links to the table</span></span>
 <span>  <span class="va">table_link</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_cols</a></span><span class="op">(</span><span class="va">table</span>, <span class="va">links</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
@@ -490,9 +490,9 @@ problems, cached, request, class</code></pre>
 <span><span class="va">table_all</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># save full table to file</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/readr/man/read_rds.html">write_rds</a></span><span class="op">(</span><span class="va">table_all</span>, file <span class="op">=</span> <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"restaurant_list_links.rds"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html">write_rds</a></span><span class="op">(</span><span class="va">table_all</span>, file <span class="op">=</span> <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"restaurant_list_links.rds"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Side note: <code><a href="https://rdrr.io/r/base/readRDS.html">saveRDS()</a></code> vs <code><a href="https://rdrr.io/pkg/readr/man/read_rds.html">write_rds()</a></code>: the only major difference between the two is that <code><a href="https://rdrr.io/pkg/readr/man/read_rds.html">write_rds()</a></code> does not compress the file by default.</p>
+<p>Side note: <code><a href="https://rdrr.io/r/base/readRDS.html">saveRDS()</a></code> vs <code><a href="https://readr.tidyverse.org/reference/read_rds.html">write_rds()</a></code>: the only major difference between the two is that <code><a href="https://readr.tidyverse.org/reference/read_rds.html">write_rds()</a></code> does not compress the file by default.</p>
 <p>(I only added cache: true at his point, to avoid repeated scraping, I’ll load the . rds file here for downstream visualization.)</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -563,7 +563,7 @@ problems, cached, request, class</code></pre>
 </div>
 <p>It’s time to save this new dataframe as another .rds object so we don’t have to spend that 39.5s to geocode the same data again next time we need to map the data.</p>
 <div class="cell">
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/readr/man/read_rds.html">write_rds</a></span><span class="op">(</span><span class="va">table_geo</span>, <span class="st">"data/restaurant_list_geocoded.rds"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html">write_rds</a></span><span class="op">(</span><span class="va">table_geo</span>, <span class="st">"data/restaurant_list_geocoded.rds"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section><section id="building-the-map" class="level1"><h1>Building the map</h1>
 <p>Here comes leaflet!!</p>
